@@ -1,2 +1,2 @@
 # sqlTUT
-sql tutorial for lqy1998
+postgresql tutorial for lqy1998

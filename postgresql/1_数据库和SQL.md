@@ -60,11 +60,11 @@
 # 代码
 
 **创建数据库**
-
+```sql
 	CREATE DATABASE <数据库名称>;
-
+```
 **创建表**
-
+```sql
 	CREATE TABLE <表名>
 	(<列名1> <数据类型> <该列所需约束>,
 	 <列名2> <数据类型> <该列所需约束>,
@@ -80,23 +80,23 @@
 	 purchase_price INTEGER       ,
 	 regist_date    DATE          ,
 	 PRIMARY KEY (product_id));
-
+```
 **删除表**
-
+```sql
 	DROP TABLE <表名>;
-
+```
 
 **更新表：添加列，删除列**  
 无法撤销
-
+```sql
 	ALTER TABLE <表名> ADD COLUMN <列的定义>;	
 	ALTER TABLE <表名> DROP COLUMN <列的定义>;
 	-------------------------------------------
 	ALTER TABLE Product ADD COLUMN product_name_pinyin  VARCHAR(100);
 	ALTER TABLE Product DROP COLUMN product_name_pinyin  VARCHAR(100);
-	
+```	
 **插入数据**
-
+```sql
 	BEGIN TRANSACTION;
 	INSERT INTO Product VALUES ('0001', 'T恤' ,'衣服', 1000, 500, '2009-09-20');
 	INSERT INTO Product VALUES ('0002', '打孔器', '办公用品', 500, 320, '2009-09-11');
@@ -107,7 +107,8 @@
 	INSERT INTO Product VALUES ('0007', '擦菜板', '厨房用具', 880, 790, '2008-04-28');
 	INSERT INTO Product VALUES ('0008', '圆珠笔', '办公用品', 100, NULL, '2009-11-11');
 	COMMIT;
-	
+```	
 **变更表名**	
-	
+```sql	
 	ALTER TABLE Poduct RENAME TO Product;
+```

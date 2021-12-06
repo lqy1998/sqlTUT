@@ -69,28 +69,94 @@ CREATE TABLE SampleStr
 
 --DML：插入数据
 BEGIN TRANSACTION;
-INSERT INTO SampleStr (str1, str2, str3) VALUES ('opx',	        'rt'	,	NULL);
-INSERT INTO SampleStr (str1, str2, str3) VALUES ('abc'	,	'def'	,	NULL);
-INSERT INTO SampleStr (str1, str2, str3) VALUES ('山田'	,	'太郎'  ,	'是我');
-INSERT INTO SampleStr (str1, str2, str3) VALUES ('aaa'	,	NULL    ,	NULL);
-INSERT INTO SampleStr (str1, str2, str3) VALUES (NULL	,	'xyz',	        NULL);
-INSERT INTO SampleStr (str1, str2, str3) VALUES ('@!#$%',	NULL	,	NULL);
-INSERT INTO SampleStr (str1, str2, str3) VALUES ('ABC'	,	NULL	,	NULL);
-INSERT INTO SampleStr (str1, str2, str3) VALUES ('aBC'	,	NULL	,	NULL);
-INSERT INTO SampleStr (str1, str2, str3) VALUES ('abc太郎',	'abc'	,	'ABC');
-INSERT INTO SampleStr (str1, str2, str3) VALUES ('abcdefabc',   'abc'	,	'ABC');
-INSERT INTO SampleStr (str1, str2, str3) VALUES ('micmic',	      'i',        'I');;
+INSERT INTO SampleStr (str1, str2, str3) VALUES ('opx'  ,	 'rt'	 ,	NULL);
+INSERT INTO SampleStr (str1, str2, str3) VALUES ('abc'	 ,	'def'	 ,	NULL);
+INSERT INTO SampleStr (str1, str2, str3) VALUES ('刘'	  ,	'青云'  ,	'是我');
+INSERT INTO SampleStr (str1, str2, str3) VALUES ('aaa'	 ,	NULL   ,	NULL);
+INSERT INTO SampleStr (str1, str2, str3) VALUES (NULL 	 ,	'xyz'  ,	  NULL);
+INSERT INTO SampleStr (str1, str2, str3) VALUES ('@!#$%',	NULL	  ,	NULL);
+INSERT INTO SampleStr (str1, str2, str3) VALUES ('ABC'	 ,	NULL	  ,	NULL);
+INSERT INTO SampleStr (str1, str2, str3) VALUES ('aBC'	 ,	NULL	  ,	NULL);
+INSERT INTO SampleStr (str1, str2, str3) VALUES ('abc青云'  ,	'abc'	,	'ABC');
+INSERT INTO SampleStr (str1, str2, str3) VALUES ('abcdefabc', 'abc'	,	'ABC');
+INSERT INTO SampleStr (str1, str2, str3) VALUES ('micmic'   ,	'i'   , 'I');;
 COMMIT;
 
 --确认表中的内容
 SELECT * FROM SampleStr;
 ```
 
+> `||`：拼接
+```sql
+SELECT str1, str2, str1 || str2 AS str_concat
+  FROM SampleStr;
+  
+-- 拼接多个字符串
+SELECT str1, str2, str3, str1 || str2 || str3 AS str_concat
+  FROM SampleStr
+  WHERE str1 = '刘';
+```
+* SQL Server使用`+`，MySQL使用`CONCAT`函数
+	* str1 + str2 + str3
+	* CONCAT(str1, str2, str3)
+
+> `LENGTH(字符串)`：
+```sql
+SELECT str1, LENGTH(str1) AS len_str
+  FROM SampleStr;
+```
+* SQL Server使用`LEN`函数
+* 多字节字符在不同DBNS中的执行结果不同，比如在MySQL中 `LENGTH(青云) = 4`  :question:不用加""吗
+* MySQL中还有计算字符串长度的自有函数 `CHAR_LENGTH`
+
+> `LOWER(字符串)`：小写转换
+```sql
+SELECT str1, LOWER(str1) AS low_str
+  FROM SampleStr
+  WHERE str1 IN ('ABC', 'aBC', 'abc', '刘');
+```
+* UPPER大写
+
+
+> `REPLACE(对象字符串，替换前的部分，替换后的部分)`
+```sql
+SELECT str1, str2, str3, REPLACE(str1, str2, str3) AS rep_str
+  FROM SampleStr;
+```
+
+> `SUBSTRING(对象字符串 FROM 截取的起始位置 FOR 截取的字符数)`：有多少截多少
+```sql
+SELECT str1, SUBSTRING(str1 FROM 3 FOR 2) AS sub_str
+  FROM SampleStr;
+```
+
 ## 日期函数
 
+> `()`：
+```sql
+
+```
+
+> `()`：
+```sql
+
+```
+
+> `()`：
+```sql
+
+```
 ## 转换函数
 
+> `()`：
+```sql
 
+```
+
+> `()`：
+```sql
+
+```
 
 
 

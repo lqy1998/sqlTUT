@@ -164,18 +164,31 @@ SELECT CURRENT_TIMESTAMP,
 * PostgresSQL和MySQL支持
 
 ## 转换函数
+* 数据类型的转换
+* 值的转换
 
-> `()`：
+> `CAST(转换前的值 AS 想要转换的数据类型)`：类型转换
 ```sql
+-- 将字符串类型转换为数值类型
+SELECT CAST('0001' AS INTEGER) AS int_col;
+--MySQL
+SELECT CAST('0001' AS SIGNED INTEGER) AS int_col; :question: why signed
 
+-- 将字符串类型转换为日期类型
+SELECT CAST('2009-12-14' AS DATE) AS date_col;
 ```
 
-> `()`：
+> `COALESCE(数据1，数据2，数据3···)`：返回可变参数中左侧开始第1个非NULL值
 ```sql
-
+SELECT COALESCE(NULL, 1)                  AS col_1,
+       COALESCE(NULL, 'test', NULL)       AS col_2,
+       COALESCE(NULL, NULL, '2009-11-01') AS col_3;
+       
+SELECT COALESCE(str2, 'NULL')
+  FROM SampleStr;       
 ```
 
-
+# 6.2 谓词
 
 
 

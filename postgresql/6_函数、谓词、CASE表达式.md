@@ -129,23 +129,40 @@ SELECT str1, str2, str3, REPLACE(str1, str2, str3) AS rep_str
 SELECT str1, SUBSTRING(str1 FROM 3 FOR 2) AS sub_str
   FROM SampleStr;
 ```
+* 虽然是标准SQL，但是只有PostgresSQL和MySQL支持
 
 ## 日期函数
 
-> `()`：
+> `CURRENT_DATE`：获取当前日期
 ```sql
-
+SELECT CURRENT_DATE;
 ```
+* PostgresSQL和MySQL支持
 
-> `()`：
+> `CURRENT_TIME`：获取当前时间
 ```sql
-
+SELECT CURRENT_TIME;
 ```
+* PostgresSQL和MySQL支持
 
-> `()`：
+> `CURRENT_TIMESTAMP`：获取当前日期和时间
 ```sql
-
+SELECT CURRENT_TIMESTAMP;
 ```
+* SQL Server，PostgresSQL和MySQL支持
+
+> `CURRENT_TIMESTAMP`：获取当前日期和时间
+```sql
+SELECT CURRENT_TIMESTAMP,
+       EXTRACT(YEAR   FROM CURRENT_TIMESTAMP) AS year,
+       EXTRACT(MONTH  FROM CURRENT_TIMESTAMP) AS month,
+       EXTRACT(DAY    FROM CURRENT_TIMESTAMP) AS day,
+       EXTRACT(HOUR   FROM CURRENT_TIMESTAMP) AS hour,
+       EXTRACT(MINUTE FROM CURRENT_TIMESTAMP) AS minute,
+       EXTRACT(SECOND FROM CURRENT_TIMESTAMP) AS second;
+```
+* PostgresSQL和MySQL支持
+
 ## 转换函数
 
 > `()`：

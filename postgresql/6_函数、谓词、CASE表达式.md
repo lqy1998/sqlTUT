@@ -189,6 +189,43 @@ SELECT COALESCE(str2, 'NULL')
 ```
 
 # 6.2 谓词
+**`谓词`：返回值为真值的函数。**
+
+#### `LIKE`：字符串的部分一致查询
+* 前方一致：选出"**ddd***abc"
+* 中间一致：选出"ab**ddd***c"或"abc**ddd***"或"**ddd***abc"
+* 后方一致：选出"abc**ddd***"
+
+> 创建需要的SampleLike表
+```sql
+--DDL：创建表
+CREATE TABLE SampleLike
+( strcol VARCHAR(6) NOT NULL,
+  PRIMARY KEY (strcol));
+
+--DML：插入数据
+BEGIN TRANSACTION;
+INSERT INTO SampleLike (strcol) VALUES ('abcddd');
+INSERT INTO SampleLike (strcol) VALUES ('dddabc');
+INSERT INTO SampleLike (strcol) VALUES ('abdddc');
+INSERT INTO SampleLike (strcol) VALUES ('abcdd');
+INSERT INTO SampleLike (strcol) VALUES ('ddabc');
+INSERT INTO SampleLike (strcol) VALUES ('abddc');
+COMMIT;
+```
+
+> `LIKE`：字符串的部分一致查询
+```sql
+
+```
+
+
+# 6.3 CASE表达式
+
+
+
+
+
 
 
 

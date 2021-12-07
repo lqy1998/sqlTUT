@@ -192,10 +192,12 @@ SELECT COALESCE(str2, 'NULL')
 **`谓词`：返回值为真值的函数。**
 
 #### `LIKE`：字符串的部分一致查询
-* 前方一致：选出"**ddd***abc"
-* 中间一致：选出"ab**ddd***c"或"abc**ddd***"或"**ddd***abc"
-* 后方一致：选出"abc**ddd***"
-
+* 前方一致：选出"**ddd**abc"
+* 中间一致：选出"ab**ddd**c"或"abc**ddd**"或"**ddd**abc"
+* 后方一致：选出"abc**ddd**"
+	* 最宽松的查询条件是中间一致，同时包含了前方一致和后方一致的查询结果
+	* **以`字符串中是否包含该条件`的规则为基础的查询称为`模式匹配`**
+	
 > 创建需要的SampleLike表
 ```sql
 --DDL：创建表
@@ -216,7 +218,9 @@ COMMIT;
 
 > `LIKE`：字符串的部分一致查询
 ```sql
-
+SELECT *
+  FROM SampleLike
+  WHERE strcol LIKE 'ddd%';
 ```
 
 

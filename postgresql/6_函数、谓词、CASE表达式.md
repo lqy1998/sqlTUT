@@ -190,8 +190,9 @@ SELECT COALESCE(str2, 'NULL')
 
 # 6.2 谓词
 **`谓词`：返回值为真值的函数。**
+* 相当于这个函数返回一个真值列表，根据TRUE和FALSE选择输出哪些记录
 
-#### `LIKE`：字符串的部分一致查询
+### `LIKE`：字符串的部分一致查询
 * 前方一致：选出"**ddd**abc"
 * 中间一致：选出"ab**ddd**c"或"abc**ddd**"或"**ddd**abc"
 * 后方一致：选出"abc**ddd**"
@@ -216,13 +217,151 @@ INSERT INTO SampleLike (strcol) VALUES ('abddc');
 COMMIT;
 ```
 
-> `LIKE`：字符串的部分一致查询
+> `LIKE`
 ```sql
+-- 前方一致查询
 SELECT *
   FROM SampleLike
   WHERE strcol LIKE 'ddd%';
+
+-- 中间一致查询
+SELECT *
+  FROM SampleLike
+  WHERE strcol LIKE '%ddd%';
+
+-- 后方一致查询
+SELECT *
+  FROM SampleLike
+  WHERE strcol LIKE '%ddd';
+  
+-- 查询“abc + 任意2个字符”  
+SELECT *
+  FROM SampleLike
+  WHERE strcol LIKE 'abc__';
+
+-- 查询“abc + 任意3个字符”
+SELECT *
+  FROM SampleLike
+ WHERE strcol LIKE 'abc___';
+```
+* `%` 代表 “0字符以上的任意字符串”
+* `_` 代表 “任意1个字符”
+
+### `BETWEEN`：范围查询
+>`BETWEEN`
+* 包含临界值，不包含需要用`< 和 >`
+```sql
+SELECT product_name, sale_price
+  FROM Product
+  WHERE sale_price BETWEEN 100 AND 1000;
 ```
 
+### `IS NULL, IS NOT NULL`：判断是否为NULL，详见比较运算符
+
+### `IN, NOT IN`：OR的简便用法
+>`IN, NOT IN`
+```sql
+-- 使用OR指定多个进货单价进行查询
+SELECT product_name, purchase_price
+  FROM Product
+  WHERE purchase_price =  320
+    OR purchase_price =  500
+    OR purchase_price = 5000;
+
+-- 使用IN指定多个进货单价进行查询 
+SELECT product_name, purchase_price
+  FROM Product
+  WHERE purchase_price IN (320, 500, 5000);
+
+-- 使用NOT IN排除多个进货单价进行查询 
+SELECT product_name, purchase_price
+  FROM Product
+  WHERE purchase_price NOT IN (320, 500, 5000);
+```
+* `IN, NOT IN`无法选出NULL数据
+
+##### 使用子查询作为`IN`谓词的参数
+* 子查询就是SQL内部生成的表，可以将表、视图作为IN的参数
+
+> 创建需要的ShopProduct表
+```sql
+--DDL：创建表
+CREATE TABLE ShopProduct
+(shop_id    CHAR(4)       NOT NULL,
+ shop_name  VARCHAR(200)  NOT NULL,
+ product_id CHAR(4)       NOT NULL,
+ quantity   INTEGER       NOT NULL,
+ PRIMARY KEY (shop_id, product_id));         -- 指定了两列作为主键
+ 
+--DML：插入数据
+BEGIN TRANSACTION;
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000A',	'东京',	'0001',	30);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000A',	'东京',	'0002',	50);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000A',	'东京',	'0003',	15);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000B',	'名古屋', '0002', 30);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000B',	'名古屋',	'0003', 120);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000B',	'名古屋',	'0004', 20);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000B',	'名古屋',	'0006', 10);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000B',	'名古屋',	'0007', 40);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000C',	'大阪',	'0003',	20);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000C',	'大阪',	'0004',	50);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000C',	'大阪',	'0006',	90);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000C',	'大阪',	'0007',	70);
+INSERT INTO ShopProduct (shop_id, shop_name, product_id, quantity) VALUES ('000D',	'福冈',	'0001',	100);
+COMMIT;
+```
+
+> 使用子查询作为`IN`的参数
+```sql
+--取得在大阪店销售的商品的销售单价
+SELECT product_name, sale_price
+  FROM Product
+  WHERE product_id IN (SELECT product_id 
+                         FROM ShopProduct
+                         WHERE shop_id = '000C');
+```
+* 可以完美应对数据变更，这样的程序称为“易维护程序”，或者“免维护程序”
+
+> 使用子查询作为`NOT IN`的参数
+```sql
+SELECT product_name, sale_price
+  FROM Product
+  WHERE product_id NOT IN (SELECT prouct_id 
+                             FROM ShopProduct
+                             WHERE shop_id = '000A');
+```
+
+### `EXISTS`：替换IN
+> `EXISTS`只需在右侧书写一个参数，通常是一个关联子查询
+```sql
+--取得在大阪店销售的商品的销售单价
+SELECT product_name, sale_price
+  FROM Product AS P
+  WHERE EXISTS (SELECT *
+                  FROM ShopProduct AS SP
+                  WHERE SP.shop_id = '000C'
+                    AND SP.product_id = P.product_id);
+```
+
+> EXISTS只关心记录是否存在，返回哪些列都无所谓，不过通常是`*`
+```sql
+SELECT product_name, sale_price
+  FROM Product AS P
+  WHERE EXISTS (SELECT 1    -- 这里可以书写恰当的常数
+                  FROM ShopProduct AS SP
+                  WHERE SP.shop_id = '000C'
+                    AND SP.product_id = P.product_id);
+```
+
+> `NOT EXISTS` 替换 `NOT IN`
+```sql
+SELECT product_name, sale_price
+  FROM Product AS P
+  WHERE NOT EXISTS (SELECT *
+                      FROM ShopProduct AS SP
+                      WHERE SP.shop_id = '000A'
+                        AND SP.product_id = P.product_id);
+```
 
 # 6.3 CASE表达式
 

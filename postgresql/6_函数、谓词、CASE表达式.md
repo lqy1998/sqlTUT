@@ -192,7 +192,7 @@ SELECT COALESCE(str2, 'NULL')
 **`谓词`：返回值为真值的函数。**
 * 相当于这个函数返回一个真值列表，根据TRUE和FALSE选择输出哪些记录
 
-### `LIKE`：字符串的部分一致查询
+## `LIKE`：字符串的部分一致查询
 * 前方一致：选出"**ddd**abc"
 * 中间一致：选出"ab**ddd**c"或"abc**ddd**"或"**ddd**abc"
 * 后方一致：选出"abc**ddd**"
@@ -247,7 +247,7 @@ SELECT *
 * `%` 代表 “0字符以上的任意字符串”
 * `_` 代表 “任意1个字符”
 
-### `BETWEEN`：范围查询
+## `BETWEEN`：范围查询
 >`BETWEEN`
 * 包含临界值，不包含需要用`< 和 >`
 ```sql
@@ -256,9 +256,9 @@ SELECT product_name, sale_price
   WHERE sale_price BETWEEN 100 AND 1000;
 ```
 
-### `IS NULL, IS NOT NULL`：判断是否为NULL，详见比较运算符
+## `IS NULL, IS NOT NULL`：判断是否为NULL，详见比较运算符
 
-### `IN, NOT IN`：OR的简便用法
+## `IN, NOT IN`：OR的简便用法
 >`IN, NOT IN`
 ```sql
 -- 使用OR指定多个进货单价进行查询
@@ -280,7 +280,7 @@ SELECT product_name, purchase_price
 ```
 * `IN, NOT IN`无法选出NULL数据
 
-##### 使用子查询作为`IN`谓词的参数
+### 使用子查询作为`IN`谓词的参数
 * 子查询就是SQL内部生成的表，可以将表、视图作为IN的参数
 
 > 创建需要的ShopProduct表
@@ -331,7 +331,7 @@ SELECT product_name, sale_price
                              WHERE shop_id = '000A');
 ```
 
-### `EXISTS`：替换IN
+## `EXISTS`：替换IN
 > `EXISTS`只需在右侧书写一个参数，通常是一个关联子查询
 ```sql
 --取得在大阪店销售的商品的销售单价
@@ -343,7 +343,7 @@ SELECT product_name, sale_price
                     AND SP.product_id = P.product_id);
 ```
 
-> EXISTS只关心记录是否存在，返回哪些列都无所谓，不过通常是`*`
+> `EXISTS`只关心记录是否存在，返回哪些列都无所谓，不过通常是`*`
 ```sql
 SELECT product_name, sale_price
   FROM Product AS P
@@ -363,21 +363,78 @@ SELECT product_name, sale_price
                         AND SP.product_id = P.product_id);
 ```
 
-# 6.3 CASE表达式
+# 6.3 CASE表达式：条件分支
 
+## 搜索CASE表达式
+> 语法
+```sql
+CASE WHEN <求值表达式> THEN <表达式>
+	 WHEN <求值表达式> THEN <表达式>
+	 WHEN <求值表达式> THEN <表达式>
+	 ELSE <表达式>
+END
+```
+* 由于表达式最终都会返回一个值，因此CASE表达式在SQL语句执行时，每个记录都会转化为一个值
 
+> 将A~C的字符串加入到商品种类中
+```sql
+SELECT product_name,
+       CASE WHEN product_type = '衣服'     THEN 'A：' || product_type
+            WHEN product_type = '办公用品'  THEN 'B：' || product_type
+            WHEN product_type = '厨房用具'  THEN 'C：' || product_type
+            ELSE NULL
+       END AS abc_product_type
+  FROM Product;
+```
+* ELSE子句可以省略，默认为ELSE NULL，但是最好显式写出
 
+> 实现列转换
+```sql
+-- 使用GROUP BY无法实现列转换
+SELECT product_type, SUM(sale_price) AS sum_price
+  FROM Product
+  GROUP BY product_type;
+  
+-- 使用CASE对按照商品种类得到的销售单价合计值进行行列转换
+SELECT SUM(CASE WHEN product_type = '衣服'    THEN sale_price ELSE 0 END) AS sum_price_clothes,
+       SUM(CASE WHEN product_type = '厨房用具' THEN sale_price ELSE 0 END) AS sum_price_kitchen,
+       SUM(CASE WHEN product_type = '办公用品' THEN sale_price ELSE 0 END) AS sum_price_office
+  FROM Product;
+```
 
+## 简单CASE表达式
+> 语法
+```sql
+CASE <表达式>
+     WHEN <表达式> THEN <表达式>
+	 WHEN <表达式> THEN <表达式>
+	 WHEN <表达式> THEN <表达式>
+	 ELSE <表达式>
+END
+```
 
-
-
-
-
-
-
-
-
-
+> 将A~C的字符串加入到商品种类中
+```sql
+-- 使用简单CASE表达式的情况
+SELECT product_name,
+       CASE product_type
+            WHEN '衣服'    THEN 'A：' || product_type
+            WHEN '办公用品' THEN 'B：' || product_type
+            WHEN '厨房用具' THEN 'C：' || product_type
+            ELSE NULL
+       END AS abc_product_type
+  FROM Product;
+  
+--使用搜索CASE表达式的情况
+SELECT product_name,
+       CASE WHEN product_type = '衣服'    THEN 'A：' || product_type
+            WHEN product_type = '办公用品' THEN 'B：' || product_type
+            WHEN product_type = '厨房用具' THEN 'C：' || product_type
+            ELSE NULL
+       END AS abc_product_type
+  FROM Product;
+```
+* 将想要求值的表达式书写一次后，就无需在后续的WHEN子句中重复书写了，但是如果想在WHEN子句中指定不同列，简单CASE就无能为力了
 
 
 

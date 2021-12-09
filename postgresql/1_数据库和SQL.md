@@ -90,10 +90,10 @@
 无法撤销
 ```sql
 	ALTER TABLE <表名> ADD COLUMN <列的定义>;	
-	ALTER TABLE <表名> DROP COLUMN <列的定义>;
+	ALTER TABLE <表名> DROP COLUMN <列名>;
 	-------------------------------------------
 	ALTER TABLE Product ADD COLUMN product_name_pinyin  VARCHAR(100);
-	ALTER TABLE Product DROP COLUMN product_name_pinyin  VARCHAR(100);
+	ALTER TABLE Product DROP COLUMN product_name_pinyin;
 ```	
 **插入数据**
 ```sql
